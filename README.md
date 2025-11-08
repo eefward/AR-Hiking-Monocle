@@ -5,7 +5,7 @@ for UBHACKING
 Utilizes MobileNet SSD AI Model & DeepLabV3 MobileNetV3 Large Model
 
 *Working Stuff*
-- Zoom
+- Zoom (not real zoom in where it gets clearer)
 - Time
 - People & Bottle Recognition (animals but unconfirmed)
 - Large Bodies of Water recognition
