@@ -1,6 +1,6 @@
-for hackathon
+for UBHACKING
 
-#One-eyed AI-powered vision that enhances your hiking experience.
+One-eyed AI-powered vision that enhances your hiking experience.
 
 Utilizes MobileNet SSD AI Model & DeepLabV3 MobileNetV3 Large Model
 
