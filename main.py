@@ -18,7 +18,7 @@ map_img = cv2.imread("map_img.png")
 map_w, map_h = 150, 100
 map_img = cv2.resize(map_img, (map_w, map_h))
 
-altitude = 100 # meters
+altitude = 100 # Meters
 aqi = 42 # Air Quality Index
 weather = "Sunny"
 
@@ -154,7 +154,7 @@ while True:
     text_y = circle_y + 5
 
     if recording:
-        if out is None:  # initialize on first frame
+        if out is None:
             out = cv2.VideoWriter(video_filename, fourcc, fps, frame_size)
         out.write(overlay)
         if int(current_time_flash / flash_interval) % 2 == 0:
@@ -194,8 +194,6 @@ while True:
         zoom_factor = max(zoom_factor - zoom_step, zoom_min)
     elif key == ord('r'): 
         recording = not recording
-
-
 
 cap.release()
 if out is not None:
