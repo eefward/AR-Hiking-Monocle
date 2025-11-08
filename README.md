@@ -2,7 +2,7 @@ for UBHACKING
 # AR Hiking Monocle
 **One-eyed AI-powered vision that enhances your hiking experience.**
 ---------------------------------------------------------
-*Utilizes MobileNet SSD AI Model & DeepLabV3 MobileNetV3 Large Model*
+*Utilizes MobileNet SSD AI Model (https://github.com/chuanqi305/MobileNet-SSD) & DeepLabV3 MobileNetV3 Large Model*
 
 **Controls**
 
