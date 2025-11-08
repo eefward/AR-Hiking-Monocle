@@ -11,7 +11,7 @@ W & S - Zoom in / Zoom out
 *Working Stuff*
 - Zoom (not real zoom in where it gets clearer)
 - Time
-- Recording
+- Recording (saves as recording.mp4, replaces old existing recording)
 - People & Bottle Recognition (animals but unconfirmed)
 - Large Bodies of Water recognition
 
