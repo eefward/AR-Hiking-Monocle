@@ -4,16 +4,20 @@ for UBHACKING
 ---------------------------------------------------------
 Utilizes MobileNet SSD AI Model & DeepLabV3 MobileNetV3 Large Model
 
+Q - Close Out Camera
+R - Toggle Recording
+W & S - Zoom in / Zoom out
+
 *Working Stuff*
 - Zoom (not real zoom in where it gets clearer)
 - Time
+- Recording
 - People & Bottle Recognition (animals but unconfirmed)
 - Large Bodies of Water recognition
 
-*Artificial Stuff that will be made later*
+*Artificial Stuff that is made but only works visually*
 - GPS
 - Compass
-- Recording
 - Weather
 - AQI (Air Quality)
 - Current Weather
