@@ -9,6 +9,7 @@ Q - Close Out Camera
 R - Toggle Recording
 
 W & S - Zoom in / Zoom out
+
 ---------------------------------
 *Working Stuff*
 - Zoom (not real zoom in where it gets clearer)
