@@ -18,10 +18,9 @@ map_img = cv2.imread("map_img.png")
 map_w, map_h = 150, 100
 map_img = cv2.resize(map_img, (map_w, map_h))
 
-altitude = 100  # meters
-aqi = 42        # Air Quality Index
+altitude = 100 # meters
+aqi = 42 # Air Quality Index
 weather = "Sunny"
-
 
 # Deeplab AI Model (detects rivers and lakes and big bodies of water)
 deeplab = models.segmentation.deeplabv3_mobilenet_v3_large(pretrained=True).eval()
@@ -45,6 +44,14 @@ zoom_factor = 1.0
 zoom_step = 0.1
 zoom_min = 1.0
 zoom_max = 3.0
+
+recording = True  
+out = None     
+video_filename = "recording.mp4"
+fps = 20.0      
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')  
+frame_size = (640, 360) 
+
 
 def draw_arrow(img, center, size=15, color=(0,255,0), angle=0):
     pts = np.array([[0,-size], [-size//2,size],[size//2,size]], np.float32)
@@ -145,9 +152,20 @@ while True:
     circle_y = h - 50 
     text_x = circle_x + circle_radius + 5
     text_y = circle_y + 5
-    if int(current_time_flash/flash_interval)%2==0:
-        cv2.circle(overlay,(circle_x,circle_y),circle_radius,(0,0,255),-1)
-    cv2.putText(overlay,"Recording",(text_x,text_y),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
+
+    if recording:
+        if out is None:  # initialize on first frame
+            out = cv2.VideoWriter(video_filename, fourcc, fps, frame_size)
+        out.write(overlay)
+        if int(current_time_flash / flash_interval) % 2 == 0:
+            cv2.circle(overlay, (circle_x, circle_y), circle_radius, (0, 0, 255), -1)
+        cv2.putText(overlay, "Recording", (text_x, text_y),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+    else:
+        if out is not None:
+            out.release()
+            out = None
+        cv2.putText(overlay, "Not Recording", (text_x - 35, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (155, 155, 155), 1)
 
     # Zoom
     bar_width = 100
@@ -166,14 +184,20 @@ while True:
 
     cv2.imshow("AR Hiking Monocle", overlay)
 
+    # Keybinds
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         break
     elif key == ord('w'):
-        zoom_factor = min(zoom_factor+zoom_step,zoom_max)
-    elif key == ord('s'):  
-        zoom_factor = max(zoom_factor-zoom_step,zoom_min)
+        zoom_factor = min(zoom_factor + zoom_step, zoom_max)
+    elif key == ord('s'):
+        zoom_factor = max(zoom_factor - zoom_step, zoom_min)
+    elif key == ord('r'): 
+        recording = not recording
+
 
 
 cap.release()
+if out is not None:
+    out.release()
 cv2.destroyAllWindows()
