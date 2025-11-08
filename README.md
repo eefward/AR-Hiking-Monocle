@@ -22,3 +22,8 @@ W & S - Zoom in / Zoom out
 - Compass
 - AQI (Air Quality)
 - Current Weather
+---------------------------------
+*Future stuff that could be implemented*
+- Distance checker
+- Friends GPS Markers
+- Health Monitors
