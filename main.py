@@ -5,9 +5,7 @@ from torchvision import models, transforms
 from datetime import datetime
 import time
 
-# ------------------------
-# Object Detection (MobileNet SSD)
-# ------------------------
+# MobilenetSSD AI Model (detects people and the classes underneath)
 prototxt = "deploy.prototxt"
 model_caffe = "mobilenet_iter_73000.caffemodel"
 net = cv2.dnn.readNetFromCaffe(prototxt, model_caffe)
@@ -16,22 +14,16 @@ CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
            "dog", "horse", "motorbike", "person", "pottedplant",
            "sheep", "sofa", "train", "tvmonitor"]
 
-map_img = cv2.imread("map_img.png")  # replace with your map image path
+map_img = cv2.imread("map_img.png")  
 
-# Resize it to fit top-right corner
 map_w, map_h = 150, 100
-map_img = cv2.resize(map_img, (map_w, map_h))  # width x height
+map_img = cv2.resize(map_img, (map_w, map_h))  
 
-# ------------------------
-# Fake environmental data
-# ------------------------
-altitude = 100  # meters
-aqi = 42        # Air Quality Index
+altitude = 100  
+aqi = 42       
 weather = "Sunny"
 
-# ------------------------
-# Semantic Segmentation (DeepLabV3 MobileNetV3 Large)
-# ------------------------
+# Deeplab AI Model (detects rivers and lakes and big bodies of water)
 deeplab = models.segmentation.deeplabv3_mobilenet_v3_large(pretrained=True).eval()
 preprocess = transforms.Compose([
     transforms.ToPILImage(),
@@ -42,9 +34,6 @@ preprocess = transforms.Compose([
 ])
 WATER_CLASS = 10
 
-# ------------------------
-# Video capture
-# ------------------------
 cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
@@ -52,29 +41,20 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
 last_segmentation_time = 0
 mask_colored_resized = None
 
-# ------------------------
-# Create a fake map image
-# ------------------------
 map_h, map_w = 100, 150
-fake_map = np.full((map_h, map_w, 3), 200, dtype=np.uint8)  # gray background
-cv2.rectangle(fake_map, (0,0), (map_w-1, map_h-1), (255,255,255), 2)  # border
-# draw some fake roads
+fake_map = np.full((map_h, map_w, 3), 200, dtype=np.uint8) 
+cv2.rectangle(fake_map, (0,0), (map_w-1, map_h-1), (255,255,255), 2) 
 cv2.line(fake_map, (10, 20), (140, 20), (50,50,50), 2)
 cv2.line(fake_map, (10, 50), (140, 50), (50,50,50), 2)
 cv2.line(fake_map, (10, 80), (140, 80), (50,50,50), 2)
 
 def draw_arrow(img, center, size=15, color=(0,255,0), angle=0):
-    """
-    Draws a triangular navigation arrow at center
-    angle in degrees, 0 = up
-    """
     pts = np.array([
-        [0, -size],     # tip
+        [0, -size],     
         [-size//2, size], 
         [size//2, size]
     ], np.float32)
 
-    # Rotation
     theta = np.radians(angle)
     R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
     pts = pts @ R.T
@@ -83,17 +63,8 @@ def draw_arrow(img, center, size=15, color=(0,255,0), angle=0):
     cv2.fillPoly(img, [pts], color)
 
 def draw_compass(img, center, radius=20, heading=0):
-    """
-    Draw a simple compass.
-    img: image to draw on
-    center: (x, y) center of compass
-    radius: size of the compass
-    heading: angle in degrees (0 = North/up)
-    """
-    # Draw outer circle
     cv2.circle(img, center, radius, (0, 0, 0), 2)
 
-    # Draw cardinal points
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 0.4
     thickness = 1
@@ -103,7 +74,6 @@ def draw_compass(img, center, radius=20, heading=0):
     cv2.putText(img, 'E', (center[0]+offset-5, center[1]+5), font, font_scale, (0,0,0), thickness)
     cv2.putText(img, 'W', (center[0]-offset-5, center[1]+5), font, font_scale, (0,0,0), thickness)
 
-    # Draw heading arrow
     theta = np.radians(heading)
     arrow_length = radius - 5
     tip = (int(center[0] + arrow_length * np.sin(theta)),
@@ -117,9 +87,7 @@ while True:
         break
     h, w = frame.shape[:2]
 
-    # ------------------------
-    # Object Detection (people + bottles as water)
-    # ------------------------
+    # Detects bottles (water) and people
     blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)),
                                  0.007843, (300, 300), 127.5)
     net.setInput(blob)
@@ -146,9 +114,7 @@ while True:
                             (startX, startY - 5),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1)
 
-    # ------------------------
-    # Semantic Segmentation (water) every 2 seconds
-    # ------------------------
+    # Detects water, or at least tries to detect lakes and riveres every 2 seconds
     current_time = time.time()
     if current_time - last_segmentation_time > 2:
         input_tensor = preprocess(frame).unsqueeze(0)
@@ -162,57 +128,45 @@ while True:
 
         last_segmentation_time = current_time
 
-    # ------------------------
-    # Overlay segmentation mask
-    # ------------------------
     if mask_colored_resized is not None:
         overlay = cv2.addWeighted(frame, 0.7, mask_colored_resized, 0.3, 0)
     else:
         overlay = frame.copy()
 
-    # ------------------------
-    # Draw smaller current time (top-left)
-    # ------------------------
+    # Real Time
     now = datetime.now().strftime("%H:%M:%S")
     cv2.putText(overlay, f"{now}", (10, 25),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
 
-    # ------------------------
-    # Overlay fake map (top-right) with arrow
-    # ------------------------
+    # Fake GPS and Map
     map_x, map_y = w - map_w - 10, 10
     overlay[map_y:map_y+map_h, map_x:map_x+map_w] = map_img.copy()
     draw_arrow(overlay, (map_x + map_w//2, map_y + map_h//2),
-               size=15, color=(0,255,0), angle=0)  # arrow pointing up
+               size=15, color=(0,255,0), angle=0) 
 
     compass_center = (map_x + 25, map_y + map_h - 25)
-    draw_compass(overlay, compass_center, radius=20, heading=45)  # heading in degrees
+    draw_compass(overlay, compass_center, radius=20, heading=45)  
 
     bar_height = 30
-    cv2.rectangle(overlay, (0, h - bar_height), (w, h), (50, 50, 50), -1)  # semi-dark bar
+    cv2.rectangle(overlay, (0, h - bar_height), (w, h), (50, 50, 50), -1)  
 
     status_text = f"Altitude: {altitude}m | Air Quality: {aqi} AQI | Current Weather: {weather}"
     cv2.putText(overlay, status_text, (10, h - 8),
     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
-    # ------------------------
-    # Flashing recording indicator with constant text
-    # ------------------------
+    # Fake Recording
     flash_interval = 0.5
     current_time = time.time()
 
-    # Position: slightly above the status bar
     circle_radius = 8
-    circle_x = w - 110  # move left so text fits
-    circle_y = h - 50  # higher than bar
+    circle_x = w - 110  
+    circle_y = h - 50 
     text_x = circle_x + circle_radius + 5
     text_y = circle_y + 5
 
-    # Draw the flashing red circle
     if int(current_time / flash_interval) % 2 == 0:
         cv2.circle(overlay, (circle_x, circle_y), circle_radius, (0, 0, 255), -1)
 
-    # Draw the constant "Recording" text next to it
     cv2.putText(overlay, "Recording", (text_x, text_y),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
