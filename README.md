@@ -18,6 +18,5 @@ W & S - Zoom in / Zoom out
 *Artificial Stuff that is made but only works visually*
 - GPS
 - Compass
-- Weather
 - AQI (Air Quality)
 - Current Weather
