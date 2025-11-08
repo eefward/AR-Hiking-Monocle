@@ -5,7 +5,9 @@ for UBHACKING
 Utilizes MobileNet SSD AI Model & DeepLabV3 MobileNetV3 Large Model
 
 Q - Close Out Camera
+
 R - Toggle Recording
+
 W & S - Zoom in / Zoom out
 
 *Working Stuff*
