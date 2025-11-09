@@ -173,7 +173,7 @@ while True:
     draw_arrow(overlay,(map_x+map_w//2,map_y+map_h//2),size=15,color=(0,255,0),angle=0)
     draw_compass(overlay,(map_x+25,map_y+map_h-25),radius=20,heading=45)
 
-    # Fake Altitude, AQI, and weather
+    # Fake Altitude, AQI, and Weather
     bar_height = 30
     cv2.rectangle(overlay,(0,h-bar_height),(w,h),(50,50,50),-1)
     status_text = f"Altitude: {altitude}m | Air Quality: {aqi} AQI | Current Weather: {weather}"
