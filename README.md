@@ -18,7 +18,8 @@ W & S - Zoom in / Zoom out
 - Time
 - Recording (saves as recording.mp4, replaces old existing recording)
 - People & Bottle Recognition (animals but unconfirmed)
-- Large Bodies of Water recognition
+- Large Bodies of Water recognition (unconfirmed)
+- Night Vision
 ---------------------------------
 *Artificial Stuff that is made but only works visually*
 - GPS
