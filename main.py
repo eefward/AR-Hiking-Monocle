@@ -132,8 +132,8 @@ while True:
     # NVG
 
     if nvg_mode:
-        # Convert to grayscale
         gray = cv2.cvtColor(overlay, cv2.COLOR_BGR2GRAY)
+
         clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
         enhanced = clahe.apply(gray)
 
@@ -141,9 +141,19 @@ while True:
                         [-1, 5,-1],
                         [0, -1, 0]])
         enhanced = cv2.filter2D(enhanced, -1, kernel)
+
         overlay = cv2.merge((enhanced // 6, enhanced, enhanced // 6))
 
-        overlay = cv2.GaussianBlur(overlay, (3,3), 0)
+        glow = cv2.GaussianBlur(overlay, (31, 31), 0)  
+        overlay = cv2.addWeighted(overlay, 1.0, glow, 0.4, 0) 
+
+        rows, cols = overlay.shape[:2]
+        kernel_x = cv2.getGaussianKernel(cols, 250)
+        kernel_y = cv2.getGaussianKernel(rows, 250)
+        vignette = kernel_y * kernel_x.T
+        vignette = vignette / np.max(vignette)
+        vignette = np.dstack((vignette, vignette, vignette))
+        overlay = (overlay * vignette).astype(np.uint8)
 
         text = "NVG ACTIVATED"
         (text_w, text_h), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
@@ -151,6 +161,7 @@ while True:
         text_y = 40
         cv2.putText(overlay, text, (text_x, text_y),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 120, 0), 2)
+
 
     # Real Time
     now = datetime.now().strftime("%H:%M:%S")
