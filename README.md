@@ -10,6 +10,8 @@ Q - Close Out Camera
 
 R - Toggle Recording
 
+N - Toggle Night Vision
+
 W & S - Zoom in / Zoom out
 
 ---------------------------------

@@ -52,6 +52,7 @@ fps = 20.0
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  
 frame_size = (640, 360) 
 
+nvg_mode = False
 
 def draw_arrow(img, center, size=15, color=(0,255,0), angle=0):
     pts = np.array([[0,-size], [-size//2,size],[size//2,size]], np.float32)
@@ -128,6 +129,29 @@ while True:
     else:
         overlay = frame.copy()
 
+    # NVG
+
+    if nvg_mode:
+        # Convert to grayscale
+        gray = cv2.cvtColor(overlay, cv2.COLOR_BGR2GRAY)
+        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+        enhanced = clahe.apply(gray)
+
+        kernel = np.array([[0, -1, 0],
+                        [-1, 5,-1],
+                        [0, -1, 0]])
+        enhanced = cv2.filter2D(enhanced, -1, kernel)
+        overlay = cv2.merge((enhanced // 6, enhanced, enhanced // 6))
+
+        overlay = cv2.GaussianBlur(overlay, (3,3), 0)
+
+        text = "NVG ACTIVATED"
+        (text_w, text_h), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
+        text_x = (w - text_w) // 2
+        text_y = 40
+        cv2.putText(overlay, text, (text_x, text_y),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 120, 0), 2)
+
     # Real Time
     now = datetime.now().strftime("%H:%M:%S")
     cv2.putText(overlay, f"{now}", (10,25), cv2.FONT_HERSHEY_SIMPLEX,0.6,(0,255,255),2)
@@ -194,6 +218,9 @@ while True:
         zoom_factor = max(zoom_factor - zoom_step, zoom_min)
     elif key == ord('r'): 
         recording = not recording
+    elif key == ord('n'):
+        nvg_mode = not nvg_mode
+
 
 cap.release()
 if out is not None:
