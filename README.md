@@ -1,4 +1,4 @@
-for UBHACKING
+for UBHACKING see here (https://devpost.com/software/hiking-monocle)
 # AR Hiking Monocle
 **One-eyed AI-powered vision that enhances your hiking experience.**
 ---------------------------------------------------------
